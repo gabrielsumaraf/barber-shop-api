@@ -2,7 +2,6 @@ package com.api.barber.domain.entities;
 
 import com.api.barber.domain.enums.UserRole;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +10,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.management.relation.Role;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
