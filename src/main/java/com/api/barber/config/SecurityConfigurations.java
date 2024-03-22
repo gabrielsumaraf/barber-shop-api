@@ -32,6 +32,11 @@ public class SecurityConfigurations {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/services").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/services").hasRole(UserRole.OWNER.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/services/{id}").hasRole(UserRole.OWNER.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/services/{id}").hasRole(UserRole.OWNER.name())
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
