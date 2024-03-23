@@ -1,6 +1,6 @@
 package com.api.barber.rest.controllers;
 
-import com.api.barber.rest.dtos.response.ServiceResponseDto;
+import com.api.barber.rest.dtos.response.BarberServiceResponseDto;
 import com.api.barber.services.BarberServiceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
-
+@CrossOrigin
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -19,9 +19,9 @@ public class BarberServiceController {
 
     private final BarberServiceService barberServiceService;
     @GetMapping("")
-    public ResponseEntity<List<ServiceResponseDto>> findAllServices() {
+    public ResponseEntity<List<BarberServiceResponseDto>> findAllServices() {
         try {
-            List<ServiceResponseDto> services = this.barberServiceService.findAllServices();
+            List<BarberServiceResponseDto> services = this.barberServiceService.findAllServices();
             log.info("Found all services successfully");
             return ResponseEntity.ok(services);
         } catch (Exception e) {
