@@ -1,6 +1,5 @@
 package com.api.barber.rest.dtos.response;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +11,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ServiceResponseDto {
+public class BarberServiceResponseDto {
 
     private UUID id;
 

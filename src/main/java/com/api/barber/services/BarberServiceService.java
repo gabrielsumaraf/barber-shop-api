@@ -2,7 +2,7 @@ package com.api.barber.services;
 
 import com.api.barber.domain.entities.BarberService;
 import com.api.barber.repositories.BarberServiceRepository;
-import com.api.barber.rest.dtos.response.ServiceResponseDto;
+import com.api.barber.rest.dtos.response.BarberServiceResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,9 +15,9 @@ import java.util.UUID;
 public class BarberServiceService {
 
     private final BarberServiceRepository barberServiceRepository;
-    public List<ServiceResponseDto> findAllServices() {
+    public List<BarberServiceResponseDto> findAllServices() {
         return this.barberServiceRepository.findAll().stream().map(service ->
-                ServiceResponseDto.builder()
+                BarberServiceResponseDto.builder()
                         .id(service.getId())
                         .title(service.getTitle())
                         .description(service.getDescription())
