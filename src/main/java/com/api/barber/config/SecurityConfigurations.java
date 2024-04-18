@@ -1,8 +1,6 @@
 package com.api.barber.config;
 
-import com.api.barber.domain.entities.User;
 import com.api.barber.domain.enums.UserRole;
-import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,17 +24,28 @@ public class SecurityConfigurations {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return  httpSecurity
+        return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/services").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/services").hasRole(UserRole.OWNER.name())
-                        .requestMatchers(HttpMethod.PUT, "/api/services/{id}").hasRole(UserRole.OWNER.name())
-                        .requestMatchers(HttpMethod.DELETE, "/api/services/{id}").hasRole(UserRole.OWNER.name())
+                        .requestMatchers(HttpMethod.POST, "/api/services").hasRole(UserRole.OWNER.getRole())
+                        .requestMatchers(HttpMethod.PUT, "/api/services/{id}").hasRole(UserRole.OWNER.getRole())
+                        .requestMatchers(HttpMethod.DELETE, "/api/services/{id}").hasRole(UserRole.OWNER.getRole())
+                        .requestMatchers(HttpMethod.GET, "/api/appointments/working-hours").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/appointments/all").hasRole(UserRole.OWNER.getRole())
+                        .requestMatchers(HttpMethod.GET, "/api/appointments/barbers/history").hasAnyRole(
+                                UserRole.BARBER.getRole(),
+                                UserRole.OWNER.getRole())
+                        .requestMatchers(HttpMethod.GET, "/api/appointments/customers/history").hasAnyRole(
+                                UserRole.CUSTOMER.getRole())
 
+                        .requestMatchers(HttpMethod.PUT, "/api/appointments/{id}").hasAnyRole(
+                                UserRole.CUSTOMER.getRole(),
+                                UserRole.BARBER.getRole(),
+                                UserRole.OWNER.getRole())
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
@@ -49,7 +58,7 @@ public class SecurityConfigurations {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
