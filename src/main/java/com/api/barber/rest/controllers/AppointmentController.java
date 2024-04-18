@@ -70,7 +70,7 @@ public class AppointmentController {
         }
     }
 
-    @GetMapping("/history/all")
+    @GetMapping("/all/history")
     public Page<OwnerAppointmentResponseDto> findAllAppointments(@RequestParam(value = "status",required = false) AppointmentStatus status,
                                                                 @RequestParam(value = "startDate", required = false) LocalDate startDate,
                                                                 @RequestParam(value = "endDate", required = false) LocalDate endDate,

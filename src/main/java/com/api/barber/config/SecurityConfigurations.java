@@ -35,7 +35,7 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.PUT, "/api/services/{id}").hasRole(UserRole.OWNER.getRole())
                         .requestMatchers(HttpMethod.DELETE, "/api/services/{id}").hasRole(UserRole.OWNER.getRole())
                         .requestMatchers(HttpMethod.GET, "/api/appointments/working-hours").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/appointments/all").hasRole(UserRole.OWNER.getRole())
+                        .requestMatchers(HttpMethod.GET, "/api/appointments/all/history").hasRole(UserRole.OWNER.getRole())
                         .requestMatchers(HttpMethod.GET, "/api/appointments/barbers/history").hasAnyRole(
                                 UserRole.BARBER.getRole(),
                                 UserRole.OWNER.getRole())
