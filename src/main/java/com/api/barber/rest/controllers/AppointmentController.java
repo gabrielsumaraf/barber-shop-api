@@ -3,7 +3,7 @@ package com.api.barber.rest.controllers;
 import com.api.barber.domain.enums.AppointmentStatus;
 import com.api.barber.rest.dtos.request.AppointmentRequestDto;
 import com.api.barber.rest.dtos.request.AppointmentStatusUpdateRequestDto;
-import com.api.barber.rest.dtos.request.CustomerAppointmentResponseDto;
+import com.api.barber.rest.dtos.response.CustomerAppointmentResponseDto;
 import com.api.barber.rest.dtos.response.BarberAppointmentResponseDto;
 import com.api.barber.rest.dtos.response.OwnerAppointmentResponseDto;
 import com.api.barber.rest.dtos.response.WorkingHourResponseDto;
@@ -90,11 +90,11 @@ public class AppointmentController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> saveAppointment(Principal principal, @RequestBody AppointmentRequestDto request) {
+    public ResponseEntity<CustomerAppointmentResponseDto> saveAppointment(Principal principal, @RequestBody AppointmentRequestDto request) {
         try {
-            this.appointmentService.saveAppointment(principal, request);
+            CustomerAppointmentResponseDto response = this.appointmentService.saveAppointment(principal, request);
             log.info("Appointment saved successfully.");
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new RuntimeException(e);

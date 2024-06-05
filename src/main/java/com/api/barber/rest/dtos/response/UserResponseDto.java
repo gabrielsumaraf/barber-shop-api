@@ -1,28 +1,26 @@
 package com.api.barber.rest.dtos.response;
 
-import com.api.barber.domain.enums.BarberServiceStatus;
+import com.api.barber.domain.enums.UserRole;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
-
 @Builder
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BarberServiceResponseDto {
+@Data
+public class UserResponseDto {
 
     private UUID id;
 
-    private String title;
+    private String firstName;
 
-    private String description;
+    private String lastName;
 
-    private Double price;
+    private String phone;
 
-    private byte[] image;
-
-    private BarberServiceStatus status;
+    private UserRole role;
 }

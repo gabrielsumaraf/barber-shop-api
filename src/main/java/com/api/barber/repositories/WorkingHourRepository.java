@@ -20,8 +20,4 @@ public interface WorkingHourRepository extends JpaRepository<WorkingHour, UUID> 
         order by wh.hour_of_day
         """, nativeQuery = true)
     List<WorkingHour> findAllByDateAndDayOfWeek(@Param("date") LocalDate date,@Param("dayOfWeek")String dayOfWeek,@Param("barberId") UUID barberId);
-
-
-//    @Query("SELECT ts FROM TimeSlot ts WHERE ts.id NOT IN (SELECT s.timeSlot.id FROM Scheduling s WHERE s.status != 'FINISHED' AND s.date =:date)")
-//    List<WorkingHour> findAllByNotScheduledOrFinishedByDate(@Param("date") LocalDate localDate);
 }

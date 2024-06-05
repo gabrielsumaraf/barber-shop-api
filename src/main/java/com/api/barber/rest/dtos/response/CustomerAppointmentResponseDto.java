@@ -1,4 +1,4 @@
-package com.api.barber.rest.dtos.request;
+package com.api.barber.rest.dtos.response;
 
 import com.api.barber.domain.enums.AppointmentStatus;
 import lombok.AllArgsConstructor;
@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 @Builder
 @AllArgsConstructor
@@ -14,13 +15,18 @@ import java.util.UUID;
 @Data
 public class CustomerAppointmentResponseDto {
 
-    UUID id;
+    private UUID id;
 
-    String barberName;
+    private String barberName;
 
-    LocalDate date;
+    private LocalDate date;
 
-    Double total;
+    private LocalTime hour;
 
-    AppointmentStatus status;
+    private String barberServiceTitle;
+
+    private Double total;
+
+    private AppointmentStatus status;
+
 }

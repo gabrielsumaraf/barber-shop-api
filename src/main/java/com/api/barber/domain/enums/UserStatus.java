@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum UserRole {
+public enum UserStatus {
 
-    CUSTOMER("CUSTOMER"),
-    ADMIN("ADMIN"),
-    BARBER("BARBER");
-    private final String role;
+    ACTIVE("ACTIVE"),
+    INACTIVE("INACTIVE");
+
+    private final String name;
 }

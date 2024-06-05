@@ -1,6 +1,7 @@
 package com.api.barber.domain.entities;
 
 import com.api.barber.domain.enums.UserRole;
+import com.api.barber.domain.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,6 +41,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + this.role));
@@ -67,6 +71,15 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.status.getName().equals(UserStatus.ACTIVE.getName());
     }
+
+
+    @OneToMany()
+    @JoinColumn(name = "customer_id")
+    private List<Appointment> customerAppointments;
+
+    @OneToMany()
+    @JoinColumn(name = "barber_id")
+    private List<Appointment> barberAppointments;
 }
