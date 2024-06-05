@@ -1,5 +1,6 @@
 package com.api.barber.domain.entities;
 
+import com.api.barber.domain.enums.BarberServiceStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,4 +31,7 @@ public class BarberService{
 
     @Lob
     private byte[] image;
+
+    @Enumerated(EnumType.STRING)
+    private BarberServiceStatus status;
 }

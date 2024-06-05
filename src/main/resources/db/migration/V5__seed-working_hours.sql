@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 INSERT INTO working_hours
             (id, day_of_week, hour_of_day)
 VALUES

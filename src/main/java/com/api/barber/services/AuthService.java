@@ -2,10 +2,12 @@ package com.api.barber.services;
 
 import com.api.barber.domain.entities.User;
 import com.api.barber.domain.enums.UserRole;
+import com.api.barber.domain.enums.UserStatus;
 import com.api.barber.repositories.UserRepository;
 import com.api.barber.rest.dtos.request.LoginRequestDto;
 import com.api.barber.rest.dtos.request.RegisterRequestDto;
 import com.api.barber.rest.dtos.response.LoginResponseDto;
+import com.api.barber.rest.dtos.response.UserResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,9 +26,11 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
 
+    private final UserService userService;
+
     public void register(RegisterRequestDto request) {
 
-        this.checkIfUserExistsByPhone(request.getPhone());
+        this.userService.checkIfUserExistsByPhone(request.getPhone());
 
         this.validatePasswordEquality(request.getPassword(), request.getConfirmPassword());
 
@@ -36,18 +40,14 @@ public class AuthService {
                 .phone(request.getPhone())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(UserRole.CUSTOMER)
+                .status(UserStatus.ACTIVE)
                 .build();
 
-        userRepository.save(entityToSave);
-    }
-
-    private void validatePasswordEquality(String password, String confirmPassword) {
-        if (!password.equals(confirmPassword)){
-            throw new RuntimeException("Passwords do not match");
-        }
+        this.userRepository.save(entityToSave);
     }
 
     public LoginResponseDto login(LoginRequestDto request) {
+
 
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
                 request.getPhone(),
@@ -58,17 +58,25 @@ public class AuthService {
 
         var token = tokenService.generateToken((User) auth.getPrincipal());
 
+        User user = this.userRepository.findByPhone(request.getPhone());
+
+        UserResponseDto userResponseDto = UserResponseDto.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phone(user.getPhone())
+                .role(user.getRole())
+                .build();
+
         return LoginResponseDto.builder()
+                .user(userResponseDto)
                 .token(token)
                 .build();
     }
 
-    private void checkIfUserExistsByPhone(String phone) {
-
-        boolean existsUserByPhone = userRepository.existsByPhone(phone);
-
-        if (existsUserByPhone) {
-            throw new RuntimeException("User with this phone number already exists");
+    public void validatePasswordEquality(String password, String confirmPassword) {
+        if (!password.equals(confirmPassword)) {
+            throw new RuntimeException("Passwords do not match");
         }
     }
 }

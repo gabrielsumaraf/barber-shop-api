@@ -28,24 +28,37 @@ public class SecurityConfigurations {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/services").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/services").hasRole(UserRole.OWNER.getRole())
-                        .requestMatchers(HttpMethod.PUT, "/api/services/{id}").hasRole(UserRole.OWNER.getRole())
-                        .requestMatchers(HttpMethod.DELETE, "/api/services/{id}").hasRole(UserRole.OWNER.getRole())
-                        .requestMatchers(HttpMethod.GET, "/api/appointments/working-hours").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/appointments/all").hasRole(UserRole.OWNER.getRole())
-                        .requestMatchers(HttpMethod.GET, "/api/appointments/barbers/history").hasAnyRole(
+                        .requestMatchers(HttpMethod.POST, "api/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "api/register").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "api/services/active").permitAll()
+                        .requestMatchers(HttpMethod.GET, "api/services/all").hasRole(UserRole.ADMIN.getRole())
+                        .requestMatchers(HttpMethod.GET, "api/services/{id}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "api/services").hasRole(UserRole.ADMIN.getRole())
+                        .requestMatchers(HttpMethod.PUT, "api/services/{id}").hasRole(UserRole.ADMIN.getRole())
+
+                        .requestMatchers(HttpMethod.GET, "api/appointments/working-hours").permitAll()
+                        .requestMatchers(HttpMethod.GET, "api/appointments/history/all").hasRole(UserRole.ADMIN.getRole())
+                        .requestMatchers(HttpMethod.GET, "api/appointments/barbers/history").hasAnyRole(
                                 UserRole.BARBER.getRole(),
-                                UserRole.OWNER.getRole())
-                        .requestMatchers(HttpMethod.GET, "/api/appointments/customers/history").hasAnyRole(
+                                UserRole.ADMIN.getRole())
+                        .requestMatchers(HttpMethod.GET, "api/appointments/customers/history").hasRole(
                                 UserRole.CUSTOMER.getRole())
 
-                        .requestMatchers(HttpMethod.PUT, "/api/appointments/{id}").hasAnyRole(
+                        .requestMatchers(HttpMethod.PUT, "api/appointments/{id}").hasAnyRole(
                                 UserRole.CUSTOMER.getRole(),
                                 UserRole.BARBER.getRole(),
-                                UserRole.OWNER.getRole())
+                                UserRole.ADMIN.getRole())
+
+                        .requestMatchers(HttpMethod.GET, "api/barbers/active").permitAll()
+                        .requestMatchers(HttpMethod.GET, "api/barbers/all").hasRole(UserRole.ADMIN.getRole())
+                        .requestMatchers(HttpMethod.GET, "api/barbers/{id}").authenticated()
+                        .requestMatchers(HttpMethod.POST, "api/barbers").hasRole(UserRole.ADMIN.getRole())
+                        .requestMatchers(HttpMethod.PUT, "api/barbers/{id}").hasRole(UserRole.ADMIN.getRole())
+
+                        .requestMatchers(HttpMethod.GET, "api/users/me").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "api/users/inactivate").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

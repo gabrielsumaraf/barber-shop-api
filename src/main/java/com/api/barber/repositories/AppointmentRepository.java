@@ -56,6 +56,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
                                                     LocalDate endDate,
                                                     Pageable pageable);
 
-    boolean existsByBarberIdAndCustomerIdAndWorkingHourIdAndBarberServiceIdAndDate(UUID barberId, UUID customerId, UUID workingHourId, UUID barberServiceId, LocalDate date);
-
+    boolean existsByBarberIdAndCustomerIdAndWorkingHourIdAndBarberServiceIdAndDateAndStatus(UUID barberId, UUID customerId, UUID workingHourId, UUID barberServiceId, LocalDate date, AppointmentStatus status);
 }

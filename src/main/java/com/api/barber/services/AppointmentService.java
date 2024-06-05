@@ -12,10 +12,7 @@ import com.api.barber.repositories.UserRepository;
 import com.api.barber.repositories.WorkingHourRepository;
 import com.api.barber.rest.dtos.request.AppointmentRequestDto;
 import com.api.barber.rest.dtos.request.AppointmentStatusUpdateRequestDto;
-import com.api.barber.rest.dtos.request.CustomerAppointmentResponseDto;
-import com.api.barber.rest.dtos.response.BarberAppointmentResponseDto;
-import com.api.barber.rest.dtos.response.OwnerAppointmentResponseDto;
-import com.api.barber.rest.dtos.response.WorkingHourResponseDto;
+import com.api.barber.rest.dtos.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +28,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AppointmentService {
 
+    private final UserService userService;
     private final UserRepository userRepository;
 
     private final BarberServiceRepository barberServiceRepository;
@@ -59,6 +57,8 @@ public class AppointmentService {
                 .customerName(appointment.getCustomer().getFirstName() + " " + appointment.getCustomer().getLastName())
                 .customerPhone(appointment.getCustomer().getPhone())
                 .date(appointment.getDate())
+                .hour(appointment.getWorkingHour().getHourOfDay())
+                .barberServiceTitle(appointment.getBarberService().getTitle())
                 .total(appointment.getTotal())
                 .status(appointment.getStatus())
                 .build());
@@ -82,6 +82,8 @@ public class AppointmentService {
                 .id(appointment.getId())
                 .barberName(appointment.getBarber().getFirstName() + " " + appointment.getBarber().getLastName())
                 .date(appointment.getDate())
+                .hour(appointment.getWorkingHour().getHourOfDay())
+                .barberServiceTitle(appointment.getBarberService().getTitle())
                 .total(appointment.getTotal())
                 .status(appointment.getStatus())
                 .build());
@@ -105,6 +107,7 @@ public class AppointmentService {
                 .customerPhone(appointment.getCustomer().getPhone())
                 .barberName(appointment.getBarber().getFirstName() + " " + appointment.getBarber().getLastName())
                 .barberPhone(appointment.getBarber().getPhone())
+                .barberServiceTitle(appointment.getBarberService().getTitle())
                 .date(appointment.getDate())
                 .total(appointment.getTotal())
                 .status(appointment.getStatus())
@@ -114,6 +117,9 @@ public class AppointmentService {
     public List<WorkingHourResponseDto> findAvailableHours(LocalDate date, UUID barberId) throws Exception {
 
         this.isDateBeforeNow(date);
+        User barber = this.userRepository.findById(barberId).orElseThrow(() -> new RuntimeException("Barber not found"));
+
+        this.userService.checkIfUserIsInactive(barber, barber.getRole());
 
         String dayOfWeek = date.getDayOfWeek().toString();
         List<WorkingHour> workingAvailableHours = workingHourRepository.findAllByDateAndDayOfWeek(date, dayOfWeek, barberId);
@@ -124,12 +130,14 @@ public class AppointmentService {
                 .build()).toList();
     }
 
-    public void saveAppointment(Principal principal, AppointmentRequestDto request) throws Exception {
+    public CustomerAppointmentResponseDto saveAppointment(Principal principal, AppointmentRequestDto request) throws Exception {
 
         this.isDateBeforeNow(request.getDate());
 
         User barber = userRepository.findById(request.getBarberId())
                 .orElseThrow(() -> new RuntimeException("Barber not found"));
+
+        this.userService.checkIfUserIsInactive(barber, barber.getRole());
 
         if (barber.getRole() == UserRole.CUSTOMER) {
             throw new RuntimeException("User is not a barber");
@@ -137,6 +145,11 @@ public class AppointmentService {
 
         User customer = userRepository.findByPhone(principal.getName());
 
+        if (customer.getCustomerAppointments().stream()
+                .filter(appointment -> appointment.getStatus() == AppointmentStatus.PENDING)
+                .count() >= 3) {
+            throw new RuntimeException("The customer has more than 3 pending appointments");
+        }
         BarberService barberService = barberServiceRepository.findById(request.getBarberServiceId())
                 .orElseThrow(() -> new RuntimeException("Barber service not found"));
 
@@ -148,12 +161,13 @@ public class AppointmentService {
         if (!workingHour.getDayOfWeek().equals(requestDay)) {
             throw new Exception("The appointment day does not match the working day.");
         }
-        boolean exists = this.appointmentRepository.existsByBarberIdAndCustomerIdAndWorkingHourIdAndBarberServiceIdAndDate(
+        boolean exists = this.appointmentRepository.existsByBarberIdAndCustomerIdAndWorkingHourIdAndBarberServiceIdAndDateAndStatus(
                 request.getBarberId(),
                 customer.getId(),
                 workingHour.getId(),
                 barberService.getId(),
-                request.getDate());
+                request.getDate(),
+                AppointmentStatus.PENDING);
         if (exists) {
             throw new RuntimeException("There is already an appointment for the same parameters.");
         }
@@ -168,7 +182,17 @@ public class AppointmentService {
                 .total(barberService.getPrice())
                 .build();
 
-        this.appointmentRepository.save(appointment);
+        Appointment appointmentSaved = this.appointmentRepository.save(appointment);
+
+        return CustomerAppointmentResponseDto.builder()
+                .id(appointment.getId())
+                .barberName(appointment.getBarber().getFirstName() + " " + appointment.getBarber().getLastName())
+                .date(appointment.getDate())
+                .hour(appointment.getWorkingHour().getHourOfDay())
+                .barberServiceTitle(appointment.getBarberService().getTitle())
+                .total(appointment.getTotal())
+                .status(appointment.getStatus())
+                .build();
     }
 
     public void updateAppointmentStatus(Principal principal, UUID id, AppointmentStatusUpdateRequestDto request)
@@ -205,7 +229,6 @@ public class AppointmentService {
     private void validateAppointmentStatus(AppointmentStatus appointmentStatus) throws Exception {
         if (appointmentStatus != AppointmentStatus.PENDING) {
             throw new Exception("Appointment is not pending");
-
         }
     }
 

@@ -14,19 +14,21 @@ import java.util.UUID;
 @Data
 public class OwnerAppointmentResponseDto {
 
-    UUID id;
+    private UUID id;
 
-    String customerName;
+    private String customerName;
 
-    String customerPhone;
+    private String customerPhone;
 
-    String barberName;
+    private String barberName;
 
-    String barberPhone;
+    private String barberPhone;
 
-    LocalDate date;
+    private String barberServiceTitle;
 
-    Double total;
+    private LocalDate date;
 
-    AppointmentStatus status;
+    private Double total;
+
+    private AppointmentStatus status;
 }
