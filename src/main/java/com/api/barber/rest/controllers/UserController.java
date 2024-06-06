@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-@CrossOrigin
 @Slf4j
 @RequiredArgsConstructor
 @RestController

@@ -30,13 +30,14 @@ public class BarberEmployeeService {
     private final AuthService authService;
 
     public Page<BarberEmployeeResponseDto> findAllBarbers(Pageable pageable) {
-        Page<User> barbers = this.userRepository.findAll(pageable);
+        Page<User> barbers = this.userRepository.findAllByRole(pageable, UserRole.BARBER);
 
         return barbers.map(barber -> BarberEmployeeResponseDto.builder()
                 .id(barber.getId())
                 .firstName(barber.getFirstName())
                 .lastName(barber.getLastName())
                 .phone(barber.getPhone())
+                .status(barber.getStatus())
                 .build());
     }
 

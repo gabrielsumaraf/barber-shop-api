@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 @Builder
 @AllArgsConstructor
@@ -27,6 +28,8 @@ public class OwnerAppointmentResponseDto {
     private String barberServiceTitle;
 
     private LocalDate date;
+
+    private LocalTime hour;
 
     private Double total;
 

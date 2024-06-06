@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
-@CrossOrigin
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -56,14 +55,14 @@ public class BarberServiceController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> saveService(@RequestParam("title") String title,
-                                         @RequestParam("description") String description,
-                                         @RequestParam("price") Double price,
-                                         @RequestParam("image") MultipartFile imageFile) {
+    public ResponseEntity<BarberServiceResponseDto> saveService(@RequestParam(value = "title") String title,
+                                         @RequestParam(value = "description", required = false) String description,
+                                         @RequestParam(value = "price") Double price,
+                                         @RequestParam(value = "image",required = false) MultipartFile imageFile) {
         try {
-            this.barberServiceService.saveService(title, description, price, imageFile);
+            BarberServiceResponseDto response = this.barberServiceService.saveService(title, description, price, imageFile);
             log.info("Service registered successfully");
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error registering service {}", e.getMessage());
             throw new RuntimeException(e);
@@ -71,10 +70,10 @@ public class BarberServiceController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateService(@RequestParam("title") String title,
-                                           @RequestParam("description") String description,
-                                           @RequestParam("price") Double price,
-                                           @RequestParam("image") MultipartFile imageFile,
+    public ResponseEntity<?> updateService(@RequestParam(value = "title") String title,
+                                           @RequestParam(value = "description",required = false) String description,
+                                           @RequestParam(value = "price") Double price,
+                                           @RequestParam(value = "image",required = false) MultipartFile imageFile,
                                            @PathVariable("id") UUID id) {
         try {
             this.barberServiceService.updateService(title, description, price, imageFile, id);

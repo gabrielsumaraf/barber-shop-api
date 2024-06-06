@@ -109,6 +109,7 @@ public class AppointmentService {
                 .barberPhone(appointment.getBarber().getPhone())
                 .barberServiceTitle(appointment.getBarberService().getTitle())
                 .date(appointment.getDate())
+                .hour(appointment.getWorkingHour().getHourOfDay())
                 .total(appointment.getTotal())
                 .status(appointment.getStatus())
                 .build());
@@ -195,7 +196,7 @@ public class AppointmentService {
                 .build();
     }
 
-    public void updateAppointmentStatus(Principal principal, UUID id, AppointmentStatusUpdateRequestDto request)
+    public AppointmentStatusUpdateResponseDto updateAppointmentStatus(Principal principal, UUID id, AppointmentStatusUpdateRequestDto request)
             throws Exception {
         User user = this.userRepository.findByPhone(principal.getName());
 
@@ -223,7 +224,12 @@ public class AppointmentService {
             }
         }
         appointment.setStatus(request.getAppointmentStatus());
+
         this.appointmentRepository.save(appointment);
+
+        return AppointmentStatusUpdateResponseDto.builder()
+                .message("Appointment status updated successfully")
+                .build();
     }
 
     private void validateAppointmentStatus(AppointmentStatus appointmentStatus) throws Exception {
