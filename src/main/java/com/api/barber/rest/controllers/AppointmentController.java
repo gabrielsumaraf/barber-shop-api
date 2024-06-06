@@ -3,10 +3,7 @@ package com.api.barber.rest.controllers;
 import com.api.barber.domain.enums.AppointmentStatus;
 import com.api.barber.rest.dtos.request.AppointmentRequestDto;
 import com.api.barber.rest.dtos.request.AppointmentStatusUpdateRequestDto;
-import com.api.barber.rest.dtos.response.CustomerAppointmentResponseDto;
-import com.api.barber.rest.dtos.response.BarberAppointmentResponseDto;
-import com.api.barber.rest.dtos.response.OwnerAppointmentResponseDto;
-import com.api.barber.rest.dtos.response.WorkingHourResponseDto;
+import com.api.barber.rest.dtos.response.*;
 import com.api.barber.services.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +16,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-@CrossOrigin
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -30,10 +27,10 @@ public class AppointmentController {
 
     @GetMapping("/barbers/history")
     public ResponseEntity<Page<BarberAppointmentResponseDto>> findAppointmentsByBarberId(Principal principal,
-                                                                                        @RequestParam(value = "status",required = false) AppointmentStatus status,
-                                                                                        @RequestParam(value = "startDate", required = false) LocalDate startDate,
-                                                                                        @RequestParam(value = "endDate", required = false) LocalDate endDate,
-                                                                                        Pageable pageable) {
+                                                                                         @RequestParam(value = "status", required = false) AppointmentStatus status,
+                                                                                         @RequestParam(value = "startDate", required = false) LocalDate startDate,
+                                                                                         @RequestParam(value = "endDate", required = false) LocalDate endDate,
+                                                                                         Pageable pageable) {
         try {
             Page<BarberAppointmentResponseDto> response = this.appointmentService.findAppointmentsByBarberId(
                     principal,
@@ -51,10 +48,10 @@ public class AppointmentController {
 
     @GetMapping("/customers/history")
     public Page<CustomerAppointmentResponseDto> findAppointmentsByCustomerId(Principal principal,
-                                                                            @RequestParam(value = "status", required = false) AppointmentStatus status,
-                                                                            @RequestParam(value = "startDate", required = false) LocalDate startDate,
-                                                                            @RequestParam(value = "endDate", required = false) LocalDate endDate,
-                                                                            Pageable pageable) {
+                                                                             @RequestParam(value = "status", required = false) AppointmentStatus status,
+                                                                             @RequestParam(value = "startDate", required = false) LocalDate startDate,
+                                                                             @RequestParam(value = "endDate", required = false) LocalDate endDate,
+                                                                             Pageable pageable) {
         try {
             Page<CustomerAppointmentResponseDto> response = this.appointmentService.findAppointmentsByCustomerId(
                     principal,
@@ -70,11 +67,11 @@ public class AppointmentController {
         }
     }
 
-    @GetMapping("/all/history")
-    public Page<OwnerAppointmentResponseDto> findAllAppointments(@RequestParam(value = "status",required = false) AppointmentStatus status,
-                                                                @RequestParam(value = "startDate", required = false) LocalDate startDate,
-                                                                @RequestParam(value = "endDate", required = false) LocalDate endDate,
-                                                                Pageable pageable) {
+    @GetMapping("/all")
+    public Page<OwnerAppointmentResponseDto> findAllAppointments(@RequestParam(value = "status", required = false) AppointmentStatus status,
+                                                                 @RequestParam(value = "startDate", required = false) LocalDate startDate,
+                                                                 @RequestParam(value = "endDate", required = false) LocalDate endDate,
+                                                                 Pageable pageable) {
         try {
             Page<OwnerAppointmentResponseDto> response = this.appointmentService.findAllAppointments(
                     status,
@@ -115,12 +112,11 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAppointmentStatus(Principal principal, @PathVariable("id") UUID id,
-                                                     @RequestBody AppointmentStatusUpdateRequestDto request) {
+    public ResponseEntity<AppointmentStatusUpdateResponseDto> updateAppointmentStatus(Principal principal, @PathVariable("id") UUID id,
+                                                                                      @RequestBody AppointmentStatusUpdateRequestDto request) {
         try {
-            this.appointmentService.updateAppointmentStatus(principal, id, request);
-            log.info("Appointment status updated successfully.");
-            return ResponseEntity.noContent().build();
+            AppointmentStatusUpdateResponseDto response = this.appointmentService.updateAppointmentStatus(principal, id, request);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new RuntimeException(e);

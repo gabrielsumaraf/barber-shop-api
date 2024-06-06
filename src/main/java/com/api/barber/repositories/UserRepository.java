@@ -30,4 +30,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Transactional
     @Modifying
     void updateStatusByPhone(@NonNull @Param("phone") String phone, @NonNull @Param("status") UserStatus status);
+
+    Page<User> findAllByRole(Pageable pageable, UserRole userRole);
 }

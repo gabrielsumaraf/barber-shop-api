@@ -63,18 +63,28 @@ public class BarberServiceService {
                 .build();
     }
 
-    public void saveService(String title, String description, Double price, MultipartFile imageFile) throws IOException {
+    public BarberServiceResponseDto saveService(String title, String description, Double price, MultipartFile imageFile) throws IOException {
 
-        byte[] imageData = imageFile.getBytes();
-
-        BarberService barberService = BarberService.builder()
+        BarberService.BarberServiceBuilder barberServiceBuilder = BarberService.builder()
                 .title(title)
                 .description(description)
                 .price(price)
-                .image(imageData)
-                .build();
+                .status(BarberServiceStatus.ACTIVE);
 
-        this.barberServiceRepository.save(barberService);
+        if (imageFile != null){
+            byte[] imageData = imageFile.getBytes();
+            barberServiceBuilder.image(imageData);
+        }
+        BarberService barberServiceSaved = this.barberServiceRepository.save(barberServiceBuilder.build());
+
+        return BarberServiceResponseDto.builder()
+                .id(barberServiceSaved.getId())
+                .title(barberServiceSaved.getTitle())
+                .description(barberServiceSaved.getDescription())
+                .price(barberServiceSaved.getPrice())
+                .image(barberServiceSaved.getImage())
+                .status(barberServiceSaved.getStatus())
+                .build();
     }
 
     public void updateService(String title, String description, Double price, MultipartFile imageFile, UUID id) throws IOException {
@@ -82,12 +92,14 @@ public class BarberServiceService {
         BarberService barberService = this.barberServiceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Barber service not found"));
 
-        byte[] imageData = imageFile.getBytes();
+        if (imageFile != null){
+            byte[] imageData = imageFile.getBytes();
+            barberService.setImage(imageData);
+        }
 
         barberService.setTitle(title);
         barberService.setDescription(description);
         barberService.setPrice(price);
-        barberService.setImage(imageData);
 
         this.barberServiceRepository.save(barberService);
     }

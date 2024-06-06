@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.UUID;
 
-@CrossOrigin
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -72,7 +71,7 @@ public class BarberEmployeeController {
     }
 
     @PutMapping("/{id}/toggle-status")
-    public void updateBarberStatus(@PathVariable("id") UUID barberId, BarberEmployeeStatusRequestDto request) throws Exception {
+    public void updateBarberStatus(@PathVariable("id") UUID barberId, @RequestBody BarberEmployeeStatusRequestDto request) throws Exception {
         this.barberEmployeeService.updateBarberStatus(barberId, request);
     }
 }
